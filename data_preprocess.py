@@ -1,5 +1,6 @@
 import csv, random
 import numpy as np
+from collections import deque
 DATA_PATH = "../data/" 
 TRAIN_FILE = "train.txt" #45840617 lines
 def partitioning(f_name):
@@ -20,20 +21,23 @@ def partitioning(f_name):
 		w_5M = csv.writer(f_5M)
 		w_2M = csv.writer(f_2M)
 		w_3M = csv.writer(f_3M)
+		increment = 45840617/100
 		for idx, row in enumerate(reader):
-			if idx*100/45840617 % 1 == 0:
-				print idx*100/45840617, "%"
+			if idx % increment == 0:
+				print idx*100/45840617.0, "%"
+			#print len(idx_10M), idx_10M[0], idx
 			if idx_10M and idx == idx_10M[0]:
-				idx_10M.pop()
+				#print idx_10M[0]
+				idx_10M.popleft()
 				w_10M.writerow(row)
 				if idx_5M and idx == idx_5M[0]:
-					idx_5M.pop()
+					idx_5M.popleft()
 					w_5M.writerow(row)
 				if idx_2M and idx == idx_2M[0]:
-					idx_2M.pop()
+					idx_2M.popleft()
 					w_2M.writerow(row)
 				if idx_3M and idx == idx_3M[0]:
-					idx_3M.pop()
+					idx_3M.popleft()
 					w_3M.writerow(row)
 		f_10M.close()
 		f_5M.close()
@@ -53,11 +57,20 @@ def genIndices(f_name):
 	idx_2M = idx_10M[5000000:7000000]
 	idx_3M = idx_10M[7000000:]
 	idx_10M.sort()
+	#idx_10M.reverse()
 	idx_5M.sort()
+	#idx_5M.reverse()
 	idx_2M.sort()
+	#idx_2M.reverse()
 	idx_3M.sort()
+	#idx_3M.reverse()
 	print "gen indices finished"
-	return idx_10M, idx_5M, idx_2M, idx_3M
-partitioning(DATA_PATH+TRAIN_FILE)
+	#print idx_10M
+	return deque(idx_10M), deque(idx_5M), deque(idx_2M), deque(idx_3M)
+#partitioning(DATA_PATH+TRAIN_FILE)
 #lineOfFile(DATA_PATH+TRAIN_FILE)
+lineOfFile(DATA_PATH+"train_10M.csv")
+lineOfFile(DATA_PATH+"train_5M.csv")
+lineOfFile(DATA_PATH+"train_2M.csv")
+lineOfFile(DATA_PATH+"train_3M.csv")
 #print np.random.permutation(10).tolist()
