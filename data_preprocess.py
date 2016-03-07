@@ -1,9 +1,17 @@
 import csv, random
 import numpy as np
 from collections import deque
+from operator import itemgetter
+import sys
+import pickle
+import os.path
+DATA_TYPE_FILE = "../data/datatype.pickle"
 DATA_PATH = "../data/" 
 TRAIN_FILE = "train.txt" #45840617 lines
 def partitioning(f_name):
+	dict_type = {0:"int", 1:"str"}
+	type_data_counter = [[0,0]] * 40
+	type_data = [0] * 40
 	head, ext = TRAIN_FILE.split(".")
 	data = []
 	idx_10M, idx_5M, idx_2M, idx_3M = genIndices(f_name)
@@ -25,7 +33,36 @@ def partitioning(f_name):
 		w_3M = csv.writer(f_3M)
 		w_5K = csv.writer(f_5K)
 		increment = 45840617/100
+		print "checking data type"
+		if os.path.exists(DATA_TYPE_FILE):
+			with open(DATA_TYPE_FILE) as f:
+				type_data = pickle.load(f)
+		else:
+			for idx, row in enumerate(reader):
+				if idx % increment == 0:
+					print idx*100/45840617.0, "%"
+				for data_idx,data in enumerate(row):
+					try:
+						int(data)
+						type_data_counter[data_idx][1] +=1 
+					except:
+						type_data_counter[data_idx][0] +=1 
+			for row in type_data_counter:
+				print row
+			for i in xrange(len(type_data_counter)):
+				type_data[i], dump = max(enumerate(type_data_counter[i]), key = itemgetter(1))
+			with open(DATA_TYPE_FILE, "wb") as f:
+				pickle.dump(type_data, f)
+		print "finished checking data type"
+		print type_data
+		f.seek(0)
 		for idx, row in enumerate(reader):
+			for i in xrange(len(row)):
+				if type(row[i]) is str and data_type[i] == 0:
+					row[i] = sys.maxint
+				elif not (type(row[i]) is str) and data_type[i] == 1:
+					row[i] = "x"
+
 			if idx % increment == 0:
 				print idx*100/45840617.0, "%"
 			#print len(idx_10M), idx_10M[0], idx
