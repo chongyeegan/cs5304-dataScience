@@ -58,9 +58,9 @@ def partitioning(f_name):
 		f.seek(0)
 		for idx, row in enumerate(reader):
 			for i in xrange(len(row)):
-				if type(row[i]) is str and data_type[i] == 0:
+				if type(row[i]) is str and type_data[i] == 0:
 					row[i] = sys.maxint
-				elif not (type(row[i]) is str) and data_type[i] == 1:
+				elif not (type(row[i]) is str) and type_data[i] == 1:
 					row[i] = "x"
 
 			if idx % increment == 0:
