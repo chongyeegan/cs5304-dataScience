@@ -35,8 +35,8 @@ def partitioning(f_name):
 		increment = 45840617/100
 		print "checking data type"
 		if os.path.exists(DATA_TYPE_FILE):
-			with open(DATA_TYPE_FILE) as f:
-				type_data = pickle.load(f)
+			with open(DATA_TYPE_FILE) as f_data_type:
+				type_data = pickle.load(f_data_type)
 		else:
 			for idx, row in enumerate(reader):
 				if idx % increment == 0:
@@ -52,7 +52,7 @@ def partitioning(f_name):
 			for i in xrange(len(type_data_counter)):
 				type_data[i], dump = max(enumerate(type_data_counter[i]), key = itemgetter(1))
 			with open(DATA_TYPE_FILE, "wb") as f:
-				pickle.dump(type_data, f)
+				pickle.dump(type_data, f_data_type)
 		print "finished checking data type"
 		print type_data
 		f.seek(0)
