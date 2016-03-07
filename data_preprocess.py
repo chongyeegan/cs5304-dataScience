@@ -11,21 +11,31 @@ def partitioning(f_name):
 	train_5M = DATA_PATH + head + "_5M.csv"
 	train_2M = DATA_PATH + head + "_2M.csv"
 	train_3M = DATA_PATH + head + "_3M.csv"
+	train_5K = DATA_PATH + head + "_5K.csv"
 	with open(f_name) as f:
 		f_10M = open(train_10M, "wb")
 		f_5M = open(train_5M, "wb")
 		f_2M = open(train_2M, "wb")
 		f_3M = open(train_3M, "wb")
-		reader = csv.reader(f)
+		f_5K = open(train_5K, "wb")
+		reader = csv.reader(f, delimiter="\t")
 		w_10M = csv.writer(f_10M)
 		w_5M = csv.writer(f_5M)
 		w_2M = csv.writer(f_2M)
 		w_3M = csv.writer(f_3M)
+		w_5K = csv.writer(f_5K)
 		increment = 45840617/100
 		for idx, row in enumerate(reader):
 			if idx % increment == 0:
 				print idx*100/45840617.0, "%"
 			#print len(idx_10M), idx_10M[0], idx
+
+			if idx < 5000:
+				w_5K.writerow(row)
+			'''
+			else:
+				break
+			'''
 			if idx_10M and idx == idx_10M[0]:
 				#print idx_10M[0]
 				idx_10M.popleft()
@@ -43,6 +53,7 @@ def partitioning(f_name):
 		f_5M.close()
 		f_2M.close()
 		f_3M.close()
+		f_5K.close()
 		#print len(data), len(data[0])
 def lineOfFile(f_name):
 	with open(f_name) as f:
@@ -67,10 +78,10 @@ def genIndices(f_name):
 	print "gen indices finished"
 	#print idx_10M
 	return deque(idx_10M), deque(idx_5M), deque(idx_2M), deque(idx_3M)
-#partitioning(DATA_PATH+TRAIN_FILE)
+partitioning(DATA_PATH+TRAIN_FILE)
 #lineOfFile(DATA_PATH+TRAIN_FILE)
-lineOfFile(DATA_PATH+"train_10M.csv")
-lineOfFile(DATA_PATH+"train_5M.csv")
-lineOfFile(DATA_PATH+"train_2M.csv")
-lineOfFile(DATA_PATH+"train_3M.csv")
+#lineOfFile(DATA_PATH+"train_10M.csv")
+#lineOfFile(DATA_PATH+"train_5M.csv")
+#lineOfFile(DATA_PATH+"train_2M.csv")
+#lineOfFile(DATA_PATH+"train_3M.csv")
 #print np.random.permutation(10).tolist()
