@@ -6,11 +6,12 @@ import sys
 import pickle
 import os.path
 DATA_TYPE_FILE = "../data/datatype.pickle"
+IDX_FILE = "../data/idx.pickle"
 DATA_PATH = "../data/" 
 TRAIN_FILE = "train.txt" #45840617 lines
 def partitioning(f_name):
 	dict_type = {0:"int", 1:"str"}
-	type_data_counter = [[0,0]] * 40
+	type_data_counter = [[0,0] for _ in xrange(40)]
 	type_data = [0] * 40
 	head, ext = TRAIN_FILE.split(".")
 	data = []
@@ -42,27 +43,41 @@ def partitioning(f_name):
 				if idx % increment == 0:
 					print idx*100/45840617.0, "%"
 				for data_idx,data in enumerate(row):
+					#print data, data_idx
+					#print type_data_counter[data_idx]
 					try:
+						# print "try int data"
 						int(data)
+						# print "int success"
+						# print data
 						type_data_counter[data_idx][1] +=1 
 					except:
+						# print "int fail"
 						type_data_counter[data_idx][0] +=1 
-			for row in type_data_counter:
-				print row
+			#for row in type_data_counter:
+			#	print row
 			for i in xrange(len(type_data_counter)):
 				type_data[i], dump = max(enumerate(type_data_counter[i]), key = itemgetter(1))
-			with open(DATA_TYPE_FILE, "wb") as f:
+			with open(DATA_TYPE_FILE, "wb") as f_data_type:
 				pickle.dump(type_data, f_data_type)
 		print "finished checking data type"
 		print type_data
 		f.seek(0)
 		for idx, row in enumerate(reader):
 			for i in xrange(len(row)):
-				if type(row[i]) is str and type_data[i] == 0:
-					row[i] = sys.maxint
-				elif not (type(row[i]) is str) and type_data[i] == 1:
-					row[i] = "x"
-
+				if type_data[i] == 1: # this column is int
+					if row[i] == "":
+						pass
+					try:
+						int(row[i]) 
+					except:
+						row[i] = sys.maxint # fail
+				else:
+					try:
+						int(row[i])
+						row[i] = "x"
+					except:
+						pass
 			if idx % increment == 0:
 				print idx*100/45840617.0, "%"
 			#print len(idx_10M), idx_10M[0], idx
@@ -99,18 +114,24 @@ def lineOfFile(f_name):
 def genIndices(f_name):
 	#num_lines = lineOfFile(f_name)
 	print "gen indices"
-	num_lines = 45840617
-	idx_10M = np.random.permutation(45840617)[:10000000].tolist()
-	idx_5M = idx_10M[:5000000]
-	idx_2M = idx_10M[5000000:7000000]
-	idx_3M = idx_10M[7000000:]
-	idx_10M.sort()
-	#idx_10M.reverse()
-	idx_5M.sort()
-	#idx_5M.reverse()
-	idx_2M.sort()
-	#idx_2M.reverse()
-	idx_3M.sort()
+	if os.path.exists(IDX_FILE):
+		with open(IDX_FILE) as f_idx:
+			idx_10M, idx_5M, idx_2M, idx_3M = pickle.load(f_idx)
+	else:
+		num_lines = 45840617
+		idx_10M = np.random.permutation(45840617)[:10000000].tolist()
+		idx_5M = idx_10M[:5000000]
+		idx_2M = idx_10M[5000000:7000000]
+		idx_3M = idx_10M[7000000:]
+		idx_10M.sort()
+		#idx_10M.reverse()
+		idx_5M.sort()
+		#idx_5M.reverse()
+		idx_2M.sort()
+		#idx_2M.reverse()
+		idx_3M.sort()
+		with open(IDX_FILE, "wb") as f_idx:
+			pickle.dump((idx_10M, idx_5M, idx_2M, idx_3M),f_idx)
 	#idx_3M.reverse()
 	print "gen indices finished"
 	#print idx_10M
