@@ -63,6 +63,7 @@ def partitioning(f_name):
 		print "finished checking data type"
 		print type_data
 		f.seek(0)
+		w_5K.writerow(type_data)
 		for idx, row in enumerate(reader):
 			for i in xrange(len(row)):
 				if type_data[i] == 1: # this column is int
@@ -71,23 +72,27 @@ def partitioning(f_name):
 					try:
 						int(row[i]) 
 					except:
+						#pass
 						row[i] = sys.maxint # fail
 				else:
-					try:
-						int(row[i])
+				
+					if row[i] == "":
 						row[i] = "x"
-					except:
-						pass
+					else:
+						try:
+							int(row[i])
+							row[i] = "x"
+						except:
+							pass
+			if idx == 12:
+				print row[14]
 			if idx % increment == 0:
 				print idx*100/45840617.0, "%"
 			#print len(idx_10M), idx_10M[0], idx
 
 			if idx < 5000:
 				w_5K.writerow(row)
-			'''
-			else:
-				break
-			'''
+			
 			if idx_10M and idx == idx_10M[0]:
 				#print idx_10M[0]
 				idx_10M.popleft()
