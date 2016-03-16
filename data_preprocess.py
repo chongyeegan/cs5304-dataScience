@@ -45,6 +45,8 @@ def partitioning(f_name):
 				for data_idx,data in enumerate(row):
 					#print data, data_idx
 					#print type_data_counter[data_idx]
+					if data == "":
+						continue
 					try:
 						# print "try int data"
 						int(data)
@@ -73,7 +75,7 @@ def partitioning(f_name):
 						int(row[i]) 
 					except:
 						#pass
-						row[i] = sys.maxint # fail
+						row[i] = 0 # fail
 				else:
 				
 					if row[i] == "":
