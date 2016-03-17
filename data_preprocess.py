@@ -56,7 +56,7 @@ def partitioning(f_name):
 
 		if os.path.exists(DATA_TYPE_FILE):
 			with open(DATA_TYPE_FILE) as f_data_type:
-				type_data, missing_counter = pickle.load(f_data_type)
+				type_data = pickle.load(f_data_type)
 		else:
 			for idx, row in enumerate(reader):
 				if idx % increment == 0:
@@ -65,7 +65,7 @@ def partitioning(f_name):
 					#print data, data_idx
 					#print type_data_counter[data_idx]
 					if data == "":
-						missing_counter[data_idx]+=1
+						#missing_counter[data_idx]+=1
 						continue
 					try:
 						# print "try int data"
@@ -81,7 +81,7 @@ def partitioning(f_name):
 			for i in xrange(len(type_data_counter)):
 				type_data[i], dump = max(enumerate(type_data_counter[i]), key = itemgetter(1))
 			with open(DATA_TYPE_FILE, "wb") as f_data_type:
-				pickle.dump((type_data, missing_counter), f_data_type)
+				pickle.dump(type_data, f_data_type)
 		print "finished checking data type"
 		print type_data
 		#return 
