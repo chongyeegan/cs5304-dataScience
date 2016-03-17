@@ -4,8 +4,7 @@ from pyspark.mllib.regression import LabeledPoint as DataPoint
 from pyspark.mllib.tree import RandomForest
 import sys
 
-TEST_DATA = "CT/Data\ Science/data/preprocessed_train_5K.csv"
-iteration = 10
+TEST_DATA = "CT/Data\ Science/data/preprocessed_train_5M.csv"
 def ParseData(row):
 	data = [float(feature) for feature in row.split(",")]
 	return DataPoint(data[0], data[1:])
@@ -17,8 +16,8 @@ data = sc.textFile(TEST_DATA).map(ParseData)
 train, test = data.randomSplit([0.6, 0.4], seed = 11L)
 
 RF = RandomForest.trainClassifier(train, numClasses=2, categoricalFeaturesInfo={},
-                                     numTrees=3, featureSubsetStrategy="auto",
-                                     impurity='gini', maxDepth=4, maxBins=32)
+                                     numTrees=10, featureSubsetStrategy="auto",
+                                     impurity='gini', maxDepth=5, maxBins=32)
 
 predictions = RF.predict(test.map(lambda x: x.features))
 labelsAndPredictions = test.map(lambda lp: lp.label).zip(predictions)
