@@ -17,8 +17,10 @@ def partitioning(f_name):
 	head, ext = TRAIN_FILE.split(".")
 	data = []
 	idx_10M, idx_5M, idx_2M, idx_3M = genIndices(f_name)
-	idx_38M = deque(np.delete(np.array(range(45840617)), np.array(idx_10M)).tolist())
-	test_38M = DATA_PATH + head + "_38M.csv"
+	idx_38M = np.delete(np.array(range(45840617)), np.array(idx_10M))
+	test_38M_1 = DATA_PATH + head + "_38M_1.csv"
+	test_38M_2 = DATA_PATH + head + "_38M_2.csv"
+	test_38M_3 = DATA_PATH + head + "_38M_3.csv"
 	'''
 	train_10M = DATA_PATH + head + "_10M.csv"
 	train_10M = DATA_PATH + head + "_10M.csv"
@@ -35,7 +37,9 @@ def partitioning(f_name):
 		f_3M = open(train_3M, "wb")
 		f_5K = open(train_5K, "wb")
 		'''
-		f_38M = open(test_38M, "wb")
+		f_38M_1 = open(test_38M_1, "wb")
+		f_38M_2 = open(test_38M_2, "wb")
+		f_38M_3 = open(test_38M_3, "wb")
 		reader = csv.reader(f, delimiter="\t")
 		'''
 		w_10M = csv.writer(f_10M)
@@ -44,13 +48,15 @@ def partitioning(f_name):
 		w_3M = csv.writer(f_3M)
 		w_5K = csv.writer(f_5K)
 		'''
-		w_38M = csv.writer(f_38M)
+		w_38M_1 = csv.writer(f_38M_1)
+		w_38M_2 = csv.writer(f_38M_2)
+		w_38M_3 = csv.writer(f_38M_3)
 		increment = 45840617/100
 		print "checking data type"
 
 		if os.path.exists(DATA_TYPE_FILE):
 			with open(DATA_TYPE_FILE) as f_data_type:
-				type_data = pickle.load(f_data_type)
+				type_data, missing_counter = pickle.load(f_data_type)
 		else:
 			for idx, row in enumerate(reader):
 				if idx % increment == 0:
@@ -59,7 +65,7 @@ def partitioning(f_name):
 					#print data, data_idx
 					#print type_data_counter[data_idx]
 					if data == "":
-						#missing_counter[data_idx]+=1
+						missing_counter[data_idx]+=1
 						continue
 					try:
 						# print "try int data"
@@ -75,12 +81,13 @@ def partitioning(f_name):
 			for i in xrange(len(type_data_counter)):
 				type_data[i], dump = max(enumerate(type_data_counter[i]), key = itemgetter(1))
 			with open(DATA_TYPE_FILE, "wb") as f_data_type:
-				pickle.dump(type_data, f_data_type)
+				pickle.dump((type_data, missing_counter), f_data_type)
 		print "finished checking data type"
 		print type_data
 		#return 
 		f.seek(0)
 		#w_5K.writerow(type_data)
+		count_i = 0
 		for idx, row in enumerate(reader):
 			for i in xrange(len(row)):
 				if type_data[i] == 1: # this column is int
@@ -123,9 +130,17 @@ def partitioning(f_name):
 					idx_3M.popleft()
 					w_3M.writerow(row)
 			'''
-			if idx_38M and idx == idx_38M[0]:
-				idx_38M.popleft()
-				w_38M.writerow(row)
+			if count_i < len(idx_38M):
+				if idx_38M[count_i] < len(idx_38M)/3:
+					w_38M_1.writerow(row)
+				elif len(idx_38M)/3<=idx_38M[count_i] < len(idx_38M)*2/3:
+					w_38M_2.writerow(row)
+				else:
+					w_38M_3.writerow(row)
+			else:
+				break
+			count_i+=1
+
 		'''
 		f_10M.close()
 		f_5M.close()
@@ -133,7 +148,9 @@ def partitioning(f_name):
 		f_3M.close()
 		f_5K.close()
 		'''
-		f_38M.close()
+		f_38M_1.close()
+		f_38M_2.close()
+		f_38M_3.close()
 		#print len(data), len(data[0])
 def lineOfFile(f_name):
 	with open(f_name) as f:

@@ -5,7 +5,7 @@ with open("../data/preprocessed_train_5M.csv") as f_5M:
 		reader = csv.reader(f_5M, delimiter=",")
 		writer = csv.writer(f_12K)
 		for idx, row in enumerate(reader):
-			#print row
-			if idx >= 12000:
+			#print len(row)
+			if idx >= 30000:
 				break
 			writer.writerow(row)
