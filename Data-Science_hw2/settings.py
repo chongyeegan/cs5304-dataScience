@@ -1,1 +1,2 @@
-RATINGS_10M = '../../data/HW2/ml-10M100K/ratings.dat'
+RATINGS_10M = './ml-10M100K/ratings.dat'
+RATINGS_22M = './ml-latest/ratings.csv'
