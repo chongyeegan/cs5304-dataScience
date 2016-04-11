@@ -1,7 +1,8 @@
 import settings
 import numpy as np
 import operator
-from scipy.linalg import svd
+from scipy.sparse.linalg import svd
+from scipy.sparse.csr_matrix
 
 def readData():
 	data = []
@@ -34,9 +35,10 @@ def buildMatrix(data, user_dict, movie_dict, num_user, num_movie):
 	return np.array(matrix)
 
 def dim_reduction(X, w, l, u = None, v_T = None):
-	print X
+	
 	if not u and not v_T:
-		u, s, v_T = svd(X)
+		s_X = csr_matrix(X)
+		u, s, v_T = svd(s_X)
 	X_reduce = ((u[:, :w].transpose()).dot(X)).dot(v_T[:l, :].transpose())
 	return X_reduce, u, v_T
 

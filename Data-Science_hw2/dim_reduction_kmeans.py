@@ -3,27 +3,35 @@ import numpy as np
 import operator
 from scipy.linalg import svd
 from sklearn.cluster import KMeans as kmeans
+import pickle
+import os
 def readData():
-	data = []
-	user_dict = {}
-	user_count = 0
-	with open(settings.RATINGS_10M) as f:
-		for row in f:
-			user, movie, rating, timestamp = row.strip("\n").split("::")
-			if user not in user_dict:
-				user_dict[user] = user_count
-				user_count+= 1
-			data.append([user, movie, rating, timestamp])
-	data.sort(key = operator.itemgetter(3))
+	if os.path.exists("data.pickle"):
+		with open("data.pickle") as f:
+			user_dict, movie_dict, data = pickle.load(f)
+	else:
+		data = []
+		user_dict = {}
+		user_count = 0
+		with open(settings.RATINGS_10M) as f:
+			for row in f:
+				user, movie, rating, timestamp = row.strip("\n").split("::")
+				if user not in user_dict:
+					user_dict[user] = user_count
+					user_count+= 1
+				data.append([user, movie, rating, timestamp])
+		data.sort(key = operator.itemgetter(3))
 
-	movie_dict = {}
-	movie_count = 0
-	with open(settings.MOVIE_LIST) as f:
-		for row in f:
-			movie_id, movie_name, feature = row.strip("\n").split("::")
-			if movie_id not in movie_dict:
-				movie_dict[movie_id] = movie_count
-				movie_count += 1
+		movie_dict = {}
+		movie_count = 0
+		with open(settings.MOVIE_LIST) as f:
+			for row in f:
+				movie_id, movie_name, feature = row.strip("\n").split("::")
+				if movie_id not in movie_dict:
+					movie_dict[movie_id] = movie_count
+					movie_count += 1
+		with open("data.pickle", "wb") as f:
+			pickle.dump((user_dict, movie_dict, data), f)
 	
 	return user_dict, movie_dict, np.array(data)
 
@@ -48,16 +56,17 @@ num_user, num_movie = len(user_dict), len(movie_dict)
 
 w, l = int(num_user/2), int(num_movie/2)
 
-print "train kmeans classifier for userid"
+print "train kmeans classifier"
 train_reduce = [0,0,0.0] * len(train)
-user_clf = kmeans(n_clusters=w)
+user_clf = kmeans(n_clusters=w, max_iter= 30, n_jobs=4)
+print "train user"
 train_category = user_clf.fit_predict(train[:,[0,2]])
 for i in xrange(len(train_category)):
 	train_reduce[i][0] = train_category[i]
 	train_reduce[i][1] = train[i, 1]
 	train_reduce[i][2] = user_clf.cluster_centers_[train_category[i], 1]
-
-product_clf = kmeans(n_clusters=l)
+print "train product"
+product_clf = kmeans(n_clusters=l, max_iter= 30, n_jobs=4)
 train_category = product_clf.fit_predict(train_reduce[:,[1,2]])
 for i in xrange(len(train_category)):
 	train_reduce[i][1] = train_category[i]
