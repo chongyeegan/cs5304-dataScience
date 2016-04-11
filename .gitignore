@@ -2,4 +2,5 @@
 *.dat
 *.csv
 *.pyc
+*.txt
 settings.py
