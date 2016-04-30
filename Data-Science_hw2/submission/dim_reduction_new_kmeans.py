@@ -3,7 +3,7 @@ import numpy as np
 import operator
 from scipy.sparse.linalg import svds as svd
 from scipy.sparse import csr_matrix
-
+from sklearn.cluster import KMeans as kmeans
 def readData():
 	data = []
 	user_dict = {}
@@ -29,20 +29,26 @@ def readData():
 	return user_dict, movie_dict, np.array(data)
 
 def buildMatrix(data, user_dict, movie_dict, num_user, num_movie):
-	#matrix = csr_matrix((num_user, num_movie), dtype = np.float)
-	#matrix = np.array([[0.0] * num_movie for _ in xrange(num_user)])
-	ij = []
-	rating_list = []
+	
+	matrix = np.array([[0.0] * num_movie for _ in xrange(num_user)])
 	for user, movie, rating, timestamp in data:
-		rating_list.append(float(rating))
-		ij.append((user_dict[user],movie_dict[movie]) )
-	matrix = csr_matrix((rating_list, np.transpose(ij)), (num_user, num_movie) )
+		matrix[user_dict[user], movie_dict[movie]] = float(rating)
+		
 	return matrix
 
 def dim_reduction(X, w, l, u = None, v_T = None):
+	#print X
 	if not u and not v_T:
 		u, s, v_T = svd(X)
-	X_reduce = ((u[:, :w].transpose()).dot(X)).dot(v_T[:l, :].transpose())
+	print "done SVD"
+	u_T = u[:, :w].transpose()
+	print "done u_T"
+	tmp = (u[:, :w].transpose()).dot(X)
+	X = None
+	print "dot V"
+	X_reduce = (tmp).dot(v_T[:l, :].transpose())
+	tmp = None
+	print "cool"
 	return X_reduce, u, v_T
 
 print "Reading data"
@@ -52,16 +58,31 @@ train, validate,test = data[:cut1, :], data[cut1:cut2, :], data[cut2:, :]
 num_user, num_movie = len(user_dict), len(movie_dict)
 
 w, l = int(num_user/2), int(num_movie/2)
+
 print w,l
-print "SVD, train_reduction"
+print "kmeans user"
 train_matrix = buildMatrix(train, user_dict, movie_dict, num_user, num_movie)
-train_reduce, u, v_T = dim_reduction(train_matrix, w, l)
+user_clf = kmeans(n_clusters = w, n_jobs = 4)
+user_clf.fit(train_matrix)
+new_rate = []
+for centroid in user_clf.cluster_centers_:
+	new_rate.append(centroid[1])
+new_rate = np.array(new_rate)
+
+print "kmeans item"
+item_clf = kmeans(n_clusters = l, n_jobs = 4)
+item_clf.fit(new_rate.transpose())
+final_rate = []
+for centroid in item_clf.cluster_centers_:
+	final_rate.append(centroid[1])
+train_reduce = np.array(final_rate)
+
 print "save train"
 with open(DATA_FOLDER + "train.dat", "wb") as f:
 	for x in xrange(train_reduce.shape[0]):
 		for y in xrange(train_reduce.shape[1]):
 			f.write(str(x) + "::" + str(y) + "::" + str(train_reduce[x,y]) + "\n")
-
+'''
 print "validate_reduction"
 validate_matrix = buildMatrix(validate, user_dict, movie_dict, num_user, num_movie)
 validate_reduce, u, v_T = dim_reduction(validate_matrix, w, l, u, v_T)
@@ -81,4 +102,4 @@ with open(DATA_FOLDER + "test.dat", "wb") as f:
 	for x in xrange(test_reduce.shape[0]):
 		for y in xrange(test_reduce.shape[1]):
 			f.write(str(x) + "::" + str(y) + "::" + str(test_reduce[x,y]) + "\n")
-
+'''
