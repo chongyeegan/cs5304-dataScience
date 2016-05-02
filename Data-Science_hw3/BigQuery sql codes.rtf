@@ -7,10 +7,11 @@
 \f0\b\fs30 \cf0 \ul \ulc0 Military Aid Queries
 \fs24 \ulnone \
 \
-1. militaryAid_byActor1
-\b0 \
+1. militaryAid\
 \
-SELECT\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\b0 \cf0 SELECT\
   Actor1Name, Actor1Geo_Lat, Actor1Geo_Long,\
   Actor2Name, Actor2Geo_Lat, Actor2Geo_Long\
 \
@@ -23,8 +24,6 @@ WHERE\
   AND Actor1Geo_Long IS NOT NULL AND Actor1Geo_Long != 0.0\
   AND Actor2Name IS NOT NULL AND Actor2Geo_Lat IS NOT NULL AND Actor2Geo_Lat != 0.0 \
   AND Actor2Geo_Long IS NOT NULL AND Actor2Geo_Long != 0.0\
-  \
-ORDER BY Actor1Name\
 \
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
@@ -49,8 +48,9 @@ ORDER BY Actor1CountryCode\
 \
 
 \b 3. militaryAid_byActor1Country_1980To1990\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
-\b0 \
+\b0 \cf0 \
 SELECT\
   Year,\
   Actor1Name, Actor1CountryCode, Actor1Geo_Lat, Actor1Geo_Long,\
@@ -73,8 +73,9 @@ ORDER BY Actor1CountryCode\
 
 \b \cf0 4. militaryAid_byActor1Country_2000To2010\
 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
-\b0 SELECT\
+\b0 \cf0 SELECT\
   Year,\
   Actor1Name, Actor1CountryCode, Actor1Geo_Lat, Actor1Geo_Long,\
   Actor2Name, Actor2CountryCode, Actor2Geo_Lat, Actor2Geo_Long\
@@ -92,8 +93,9 @@ WHERE\
   \
 ORDER BY Actor1CountryCode\
 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
-\b 5. militaryAid_received_byAvgTone (FINAL SQL USED IN GRAPH BUILDING /VISUALIZATION)
+\b \cf0 5. militaryAid_received_byAvgTone (FINAL SQL USED IN GRAPH BUILDING /VISUALIZATION)
 \b0 \
 \
 SELECT\
@@ -115,14 +117,62 @@ ORDER BY AvgTone\
 \
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
-\b\fs30 \cf0 \ul \ulc0 Reddit Queries\
-\
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
-
-\fs24 \cf0 \ulnone 1. reddit_500k\
+\b \cf0 6. militaryAid_received_byAvgTone_1990To2000 (FINAL SQL USED IN VISUALIZATION)\
 \
 
 \b0 SELECT\
+  Year,\
+  Actor1Name, Actor1CountryCode, Actor1Geo_Lat, Actor1Geo_Long,\
+  Actor2Name, Actor2CountryCode, Actor2Geo_Lat, Actor2Geo_Long, AvgTone\
+\
+FROM\
+  [gdelt-bq:full.events]\
+\
+WHERE\
+  EventCode = "072" AND EventCode IS NOT NULL\
+  AND Actor1Name IS NOT NULL AND Actor1CountryCode IS NOT NULL \
+  AND Actor1Geo_Lat IS NOT NULL AND Actor1Geo_Lat != 0.0 AND Actor1Geo_Long IS NOT NULL AND Actor1Geo_Long != 0.0\
+  AND Actor2Name IS NOT NULL AND Actor2CountryCode IS NOT NULL \
+  AND Actor2Geo_Lat IS NOT NULL AND Actor2Geo_Lat != 0.0 AND Actor2Geo_Long IS NOT NULL AND Actor2Geo_Long != 0.0\
+  AND Year >= 1990 AND Year <= 2000 AND AvgTone IS NOT NULL\
+  \
+ORDER BY AvgTone
+\b \
+\
+7. militaryAid_received_byAvgTone_2000To2010 (FINAL SQL USED IN VISUALIZATION)\
+\
+
+\b0 SELECT\
+  Year,\
+  Actor1Name, Actor1CountryCode, Actor1Geo_Lat, Actor1Geo_Long,\
+  Actor2Name, Actor2CountryCode, Actor2Geo_Lat, Actor2Geo_Long, AvgTone\
+\
+FROM\
+  [gdelt-bq:full.events]\
+\
+WHERE\
+  EventCode = "072" AND EventCode IS NOT NULL\
+  AND Actor1Name IS NOT NULL AND Actor1CountryCode IS NOT NULL \
+  AND Actor1Geo_Lat IS NOT NULL AND Actor1Geo_Lat != 0.0 AND Actor1Geo_Long IS NOT NULL AND Actor1Geo_Long != 0.0\
+  AND Actor2Name IS NOT NULL AND Actor2CountryCode IS NOT NULL \
+  AND Actor2Geo_Lat IS NOT NULL AND Actor2Geo_Lat != 0.0 AND Actor2Geo_Long IS NOT NULL AND Actor2Geo_Long != 0.0\
+  AND Year >= 2000 AND Year <= 2010 AND AvgTone IS NOT NULL\
+  \
+ORDER BY AvgTone
+\b \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\b0 \cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\b\fs30 \cf0 \ul Reddit Queries\
+\
+
+\fs24 \ulnone 1. reddit_500k\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\b0 \cf0 SELECT\
   author, parent_id, subreddit, subreddit_id, score\
   \
 FROM\
@@ -130,11 +180,13 @@ FROM\
   \
 LIMIT 500000\
 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
-\b 2. subreddit_topFreq (USED TO FILTER OUT TOP SUBREDDITS IN FINAL DATA)\
+\b \cf0 2. subreddit_topFreq (USED TO FILTER OUT TOP SUBREDDITS IN FINAL DATA)\
 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
-\b0 SELECT \
+\b0 \cf0 SELECT \
   subreddit, COUNT(*) as frequency\
   \
 FROM \
@@ -145,11 +197,13 @@ GROUP BY \
   \
 ORDER BY frequency DESC\
 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
-\b 3. reddit_byTopSubreddit_200k (USED IN FINAL GRAPH BUILDING)\
+\b \cf0 3. reddit_byTopSubreddit_200k (USED IN FINAL GRAPH BUILDING)\
 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
-\b0 SELECT\
+\b0 \cf0 SELECT\
   author, parent_id, subreddit, subreddit_id, score\
   \
 FROM\

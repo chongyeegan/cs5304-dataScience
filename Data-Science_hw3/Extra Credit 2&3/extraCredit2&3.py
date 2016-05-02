@@ -6,6 +6,8 @@ import pickle
 import os
 import networkx as nx
 from scipy.sparse import csr_matrix, lil_matrix
+
+# PLEASE RUN trimcsv.py FIRST TO GET THE NECESSARY FILE
 FILE = "./reddit_100000.csv"
 #FILE = "reddit_50000.csv"
 
