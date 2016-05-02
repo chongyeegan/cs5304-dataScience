@@ -1,0 +1,165 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1404\cocoasubrtf460
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+\margl1440\margr1440\vieww13220\viewh8440\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\b\fs30 \cf0 \ul \ulc0 Military Aid Queries
+\fs24 \ulnone \
+\
+1. militaryAid_byActor1
+\b0 \
+\
+SELECT\
+  Actor1Name, Actor1Geo_Lat, Actor1Geo_Long,\
+  Actor2Name, Actor2Geo_Lat, Actor2Geo_Long\
+\
+FROM\
+  [gdelt-bq:full.events]\
+\
+WHERE\
+  EventCode = "072" AND EventCode IS NOT NULL\
+  AND Actor1Name IS NOT NULL AND Actor1Geo_Lat IS NOT NULL AND Actor1Geo_Lat != 0.0 \
+  AND Actor1Geo_Long IS NOT NULL AND Actor1Geo_Long != 0.0\
+  AND Actor2Name IS NOT NULL AND Actor2Geo_Lat IS NOT NULL AND Actor2Geo_Lat != 0.0 \
+  AND Actor2Geo_Long IS NOT NULL AND Actor2Geo_Long != 0.0\
+  \
+ORDER BY Actor1Name\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\b \cf0 2. militaryAid_byActor1Country
+\b0 \
+\
+SELECT\
+  Actor1Name, Actor1CountryCode, Actor1Geo_Lat, Actor1Geo_Long,\
+  Actor2Name, Actor2CountryCode, Actor2Geo_Lat, Actor2Geo_Long\
+\
+FROM\
+  [gdelt-bq:full.events]\
+\
+WHERE\
+  EventCode = "072" AND EventCode IS NOT NULL\
+  AND Actor1Name IS NOT NULL AND Actor1CountryCode IS NOT NULL AND Actor1Geo_Lat IS NOT NULL AND Actor1Geo_Lat != 0.0\
+  AND Actor1Geo_Long IS NOT NULL AND Actor1Geo_Long != 0.0\
+  AND Actor2Name IS NOT NULL AND Actor2CountryCode IS NOT NULL AND Actor2Geo_Lat IS NOT NULL AND Actor2Geo_Lat != 0.0\
+  AND Actor2Geo_Long IS NOT NULL AND Actor2Geo_Long != 0.0\
+  \
+ORDER BY Actor1CountryCode\
+\
+
+\b 3. militaryAid_byActor1Country_1980To1990\
+
+\b0 \
+SELECT\
+  Year,\
+  Actor1Name, Actor1CountryCode, Actor1Geo_Lat, Actor1Geo_Long,\
+  Actor2Name, Actor2CountryCode, Actor2Geo_Lat, Actor2Geo_Long\
+\
+FROM\
+  [gdelt-bq:full.events]\
+\
+WHERE\
+  EventCode = "072" AND EventCode IS NOT NULL\
+  AND Actor1Name IS NOT NULL AND Actor1CountryCode IS NOT NULL\
+  AND Actor1Geo_Lat IS NOT NULL AND Actor1Geo_Lat != 0.0 AND Actor1Geo_Long IS NOT NULL AND Actor1Geo_Long != 0.0\
+  AND Actor2Name IS NOT NULL AND Actor2CountryCode IS NOT NULL\
+  AND Actor2Geo_Lat IS NOT NULL AND Actor2Geo_Lat != 0.0 AND Actor2Geo_Long IS NOT NULL AND Actor2Geo_Long != 0.0\
+  AND Year >= 1980 AND Year <= 1990\
+  \
+ORDER BY Actor1CountryCode\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\b \cf0 4. militaryAid_byActor1Country_2000To2010\
+\
+
+\b0 SELECT\
+  Year,\
+  Actor1Name, Actor1CountryCode, Actor1Geo_Lat, Actor1Geo_Long,\
+  Actor2Name, Actor2CountryCode, Actor2Geo_Lat, Actor2Geo_Long\
+\
+FROM\
+  [gdelt-bq:full.events]\
+\
+WHERE\
+  EventCode = "072" AND EventCode IS NOT NULL\
+  AND Actor1Name IS NOT NULL AND Actor1CountryCode IS NOT NULL\
+  AND Actor1Geo_Lat IS NOT NULL AND Actor1Geo_Lat != 0.0 AND Actor1Geo_Long IS NOT NULL AND Actor1Geo_Long != 0.0\
+  AND Actor2Name IS NOT NULL AND Actor2CountryCode IS NOT NULL\
+  AND Actor2Geo_Lat IS NOT NULL AND Actor2Geo_Lat != 0.0 AND Actor2Geo_Long IS NOT NULL AND Actor2Geo_Long != 0.0\
+  AND Year >= 2000 AND Year <= 2010\
+  \
+ORDER BY Actor1CountryCode\
+\
+
+\b 5. militaryAid_received_byAvgTone (FINAL SQL USED IN GRAPH BUILDING /VISUALIZATION)
+\b0 \
+\
+SELECT\
+  Actor1Name, Actor1CountryCode, Actor1Geo_Lat, Actor1Geo_Long,\
+  Actor2Name, Actor2CountryCode, Actor2Geo_Lat, Actor2Geo_Long, AvgTone\
+\
+FROM\
+  [gdelt-bq:full.events]\
+\
+WHERE\
+  EventCode = "072" AND EventCode IS NOT NULL\
+  AND Actor1Name IS NOT NULL AND Actor1CountryCode IS NOT NULL \
+  AND Actor1Geo_Lat IS NOT NULL AND Actor1Geo_Lat != 0.0 AND Actor1Geo_Long IS NOT NULL AND Actor1Geo_Long != 0.0\
+  AND Actor2Name IS NOT NULL AND Actor2CountryCode IS NOT NULL \
+  AND Actor2Geo_Lat IS NOT NULL AND Actor2Geo_Lat != 0.0 AND Actor2Geo_Long IS NOT NULL AND Actor2Geo_Long != 0.0\
+  AND AvgTone IS NOT NULL\
+  \
+ORDER BY AvgTone\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\b\fs30 \cf0 \ul \ulc0 Reddit Queries\
+\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\fs24 \cf0 \ulnone 1. reddit_500k\
+\
+
+\b0 SELECT\
+  author, parent_id, subreddit, subreddit_id, score\
+  \
+FROM\
+  [fh-bigquery:reddit_comments.2014]\
+  \
+LIMIT 500000\
+\
+
+\b 2. subreddit_topFreq (USED TO FILTER OUT TOP SUBREDDITS IN FINAL DATA)\
+\
+
+\b0 SELECT \
+  subreddit, COUNT(*) as frequency\
+  \
+FROM \
+  [fh-bigquery:reddit_comments.2014]\
+\
+GROUP BY \
+  subreddit\
+  \
+ORDER BY frequency DESC\
+\
+
+\b 3. reddit_byTopSubreddit_200k (USED IN FINAL GRAPH BUILDING)\
+\
+
+\b0 SELECT\
+  author, parent_id, subreddit, subreddit_id, score\
+  \
+FROM\
+  [fh-bigquery:reddit_comments.2014]\
+  \
+WHERE\
+  subreddit = "AskReddit" OR subreddit = "funny" OR subreddit = "leagueoflegends" OR subreddit = "AdviceAnimals" OR subreddit = "pics" OR\
+  subreddit = "worldnews" OR subreddit = "videos" OR subreddit = "nfl" OR subreddit = "WTF" OR subreddit = "todayilearned" OR\
+  subreddit = "gaming" OR subreddit = "nba" OR subreddit = "soccer" OR subreddit = "DotA2" OR subreddit = "news" OR\
+  subreddit = "pcmasterrace" OR subreddit = "hockey" OR subreddit = "movies" OR subreddit = "CFB" OR subreddit = "friendsafari"\
+\
+LIMIT 200000\
+}
