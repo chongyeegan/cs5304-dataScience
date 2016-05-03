@@ -115,12 +115,12 @@ WHERE\
   \
 ORDER BY AvgTone\
 \
+
+\b 6. militaryAid_received_byAvgTone_1990To2000 (FINAL SQL USED IN VISUALIZATION)\
+\
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
-\b \cf0 6. militaryAid_received_byAvgTone_1990To2000 (FINAL SQL USED IN VISUALIZATION)\
-\
-
-\b0 SELECT\
+\b0 \cf0 SELECT\
   Year,\
   Actor1Name, Actor1CountryCode, Actor1Geo_Lat, Actor1Geo_Long,\
   Actor2Name, Actor2CountryCode, Actor2Geo_Lat, Actor2Geo_Long, AvgTone\
@@ -160,15 +160,14 @@ WHERE\
   \
 ORDER BY AvgTone
 \b \
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
-\b0 \cf0 \
+\b0 \
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
 \b\fs30 \cf0 \ul Reddit Queries\
 \
 
-\fs24 \ulnone 1. reddit_500k\
+\fs24 \ulnone 1. reddit_200k\
 \
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
@@ -178,7 +177,7 @@ ORDER BY AvgTone
 FROM\
   [fh-bigquery:reddit_comments.2014]\
   \
-LIMIT 500000\
+LIMIT 200000\
 \
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
