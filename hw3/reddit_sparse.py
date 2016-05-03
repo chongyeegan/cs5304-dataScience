@@ -6,7 +6,7 @@ import pickle
 import os
 import networkx as nx
 from scipy.sparse import csr_matrix, vstack
-FILE = "reddit_sort_100000.csv"
+FILE = "reddit_sort_200k.csv"
 #FILE = "reddit_100000.csv"
 #FILE = "reddit_50000.csv"
 
@@ -44,23 +44,31 @@ def doWork(x):
 	work = end_idx - start_idx
 	work_100 = work/100
 	print "doWork start from", start_idx
+	part_score = None
 	for i in xrange(start_idx, end_idx):
 		#print i, start_idx,work/100
 		if i % work_100 == 0:
 			print i ,(i-start_idx+1)/ work_100, "%"
 		#print i
+		tmp_score = np.zeros((1,len(author_dict)))
 		for j in xrange(len(author_dict)):
 			#if len(comment_dict[i] & comment_dict[j]) >0 and i!= j:
 				#print float(len(comment_dict[i] & comment_dict[j])) / len(comment_dict[i] | comment_dict[j])
 			#print len(comment_dict[i] & comment_dict[j]), len(comment_dict[i] | comment_dict[j])
 			#print comment_dict[i]& comment_dict[i]
-			jacc_score[i, j] = float(len(comment_dict[i] & comment_dict[j])) / len(comment_dict[i] | comment_dict[j])
-			if jacc_score[i, j] > 0 and i!= j:
-				#print "gj"
+			
+			tmp_score[0, j] = float(len(comment_dict[i] & comment_dict[j])) / len(comment_dict[i] | comment_dict[j])
+		
+			if tmp_score[0,j] > 0 and i!= j:
 				edgelist[i].add(j)
-				#print edgelist
+		tmp_score_s = csr_matrix(tmp_score)
+		if part_score is not None:
+			part_score = vstack([part_score, tmp_score_s])
+		else:
+			part_score = tmp_score_s
+
 	print edgelist
-	return edgelist
+	return edgelist, part_score
 def build_diredge_and_pagerank():
 	dirG = nx.DiGraph()
 	#print "direction"
@@ -132,21 +140,31 @@ if not os.path.exists("jacc_score.pickle"):
 	print "compute jacc_score"
 	print len(author_dict)
 	#jacc_score = csr_matrix((len(author_dict),len(author_dict)), dtype = np.float32).tolil() 
-	jacc_score = np.zeros((len(author_dict), len(author_dict))).astype(np.float32)
+	#jacc_score = np.zeros((len(author_dict), len(author_dict))).astype(np.float32)
 	print "build pool"
 	pool = Pool(5)
-	
-	edgelist_list = pool.map(doWork, [(0,int(len(author_dict)/4) ), \
+	#edgelist_list, score_list
+	totallist = pool.map(doWork, [(0,int(len(author_dict)/4) ), \
 						(int(len(author_dict)/4),int(len(author_dict)/4)*2 ), \
 						(int(len(author_dict)/4)*2,int(len(author_dict)/4)*3 ), \
 						(int(len(author_dict)/4)*3,len(author_dict) )])
 	print "Dict joining"
+	edgelist_list = []
+	scorelist = []
+	for edgelist, score in totallist:
+		edgelist_list.append(edgelist)
+		score_list.append(score)
+
 	edgelist = joinDict(edgelist_list)
+	jacc_score_s = None
+	for score in score_list:
+		if jacc_score_s is not None:
+			jacc_score_s = vstack(jacc_score_s, score)
+		else:
+			jacc_score_s = score
 	pool.close()
 	pool.join()
 	print "transfer to sparse"
-	jacc_score_s = csr_matrix(jacc_score)
-
 	print "compute jacc_score:saving pickle"
 	with open("jacc_score.pickle", "w") as f:
 		pickle.dump((jacc_score_s,edgelist) , f)

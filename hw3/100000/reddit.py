@@ -5,9 +5,10 @@ from multiprocessing import Pool
 import pickle
 import os
 import networkx as nx
-from scipy.sparse import csr_matrix, lil_matrix
+from scipy.sparse import csr_matrix, vstack
+FILE = "reddit_sort_100000.csv"
 #FILE = "reddit_100000.csv"
-FILE = "reddit_50000.csv"
+#FILE = "reddit_50000.csv"
 
 def build_dict():
 	post_dict = {}
@@ -169,6 +170,8 @@ print "undirected Pagerank"
 pr_un = pagerank(edgelist)
 print "directed Pagerank"
 pr_dir = build_diredge_and_pagerank()
+print post_author_dict
+print post_subauthor_dict
 
 
 

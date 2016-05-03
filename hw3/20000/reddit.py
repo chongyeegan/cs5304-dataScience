@@ -125,6 +125,7 @@ else:
 	print "loading dict"
 	with open("dict.pickle") as f:
 		post_dict, author_dict, comment_dict, post_author_dict, post_subauthor_dict, rev_author_dict = pickle.load(f)
+	print len(author_dict)
 	print "loading dict:finished"
 del post_dict
 if not os.path.exists("jacc_score.pickle"):

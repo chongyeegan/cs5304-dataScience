@@ -6,8 +6,10 @@ import pickle
 import os
 import networkx as nx
 from scipy.sparse import csr_matrix, lil_matrix
-#FILE = "reddit_100000.csv"
-FILE = "reddit_50000.csv"
+
+# PLEASE RUN trimcsv.py FIRST TO GET THE NECESSARY FILE
+FILE = "./reddit_100000.csv"
+#FILE = "reddit_50000.csv"
 
 def build_dict():
 	post_dict = {}
@@ -125,7 +127,6 @@ else:
 	print "loading dict"
 	with open("dict.pickle") as f:
 		post_dict, author_dict, comment_dict, post_author_dict, post_subauthor_dict, rev_author_dict = pickle.load(f)
-	print len(author_dict)
 	print "loading dict:finished"
 del post_dict
 if not os.path.exists("jacc_score.pickle"):
