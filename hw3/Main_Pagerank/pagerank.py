@@ -11,7 +11,7 @@ with open(TRAIN_FILE) as f:
 	reader = csv.reader(f)
 	reader.next()
 	for row in reader:
-		actor1, actor2 = row[0], row[1] #pagerank with actor name
+		actor1, actor2 = row[0], row[3] #pagerank with actor name
 		#actor1, actor2 = row[1], row[5] #pagerank with country name
 		G.add_edge(actor1, actor2)
 

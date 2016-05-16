@@ -1,6 +1,6 @@
 import csv
 import numpy as np
-FILE = "./reddit_bySubreddit_200k.csv"
+FILE = "reddit_200000.csv"
 total = 200000
 trim_size = 100000
 t1_count, t3_count = 0, 0

@@ -150,7 +150,7 @@ if not os.path.exists("jacc_score.pickle"):
 						(int(len(author_dict)/4)*3,len(author_dict) )])
 	print "Dict joining"
 	edgelist_list = []
-	score_list = []
+	scorelist = []
 	for edgelist, score in totallist:
 		edgelist_list.append(edgelist)
 		score_list.append(score)
