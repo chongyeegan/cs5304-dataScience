@@ -36,17 +36,17 @@ def get_data(file_name):
 
 print "loading train data"
 train_X, train_y = get_data(PATH + "a4_smvl_trn")
-train_x_y = zip(train_X,train_y)
-
+#train_x_y = zip(train_X,train_y)
+'''
 print "loading validation data"
 validation_X, validation_y = get_data(PATH + "a4_smvl_val")
-
+'''
 print "loading test data"
 test_X, test_y = get_data(PATH+"a4_smvl_tst")
-test_x_y = zip(test_X, test_y)
+#test_x_y = zip(test_X, test_y)
 print "loading data finished"
 
-print train_X.shape
+print "read train: X:", train_X.shape,"y: ", train_y.shape
 
 feature_count = train_X.shape
 learning_rate = 0.001
@@ -149,7 +149,9 @@ for epoch in range(50):
     random.shuffle(train_x_y)
     start = 0
     while start < len(train+x_y):
-        batch = np.array(train_x_y[start:start+batch_size])
+        #batch = np.array(train_x_y[start:start+batch_size])
+        batch_X = train_X[start:start+batch_size, :]
+        batch_y = train_y[tart:start+batch_size, :]
         start = start+batch_size
         labels = []
         #feats_np = np.zeros((len(batch),feature_count))
@@ -161,8 +163,8 @@ for epoch in range(50):
             labels.append(label)
         labels_np = np.vstack(labels)
         '''
-        feats_np = batch[:,0].todense()
-        labels_np = batch[:,1]
+        feats_np = batch_X.todense()
+        labels_np = batch_y
         feed_dict = {x_tensor:feats_np, y_tensor:labels_np}
         # print x_tensor,y_tensor,feats_np.shape,labels_np.shape
         summary,_ = sess.run([merged,train_step],feed_dict=feed_dict)
