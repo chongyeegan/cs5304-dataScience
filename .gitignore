@@ -3,4 +3,7 @@
 *.csv
 *.pyc
 *.txt
+a4_smvl_trn
+a4_smvl_tst
+a4_smvl_val 
 settings.py
