@@ -2,22 +2,6 @@
 import tensorflow as tf
 import numpy as np
 import random
-PATH = "../../data/"
-#gunzip -c a4_smvl_trn.gz | head -n 100000 |  gshuf > sample.txt
-'''
-x = []
-y = []
-features = set()
-for line in file("sample.txt"):
-    entries = line.strip().split(" ")
-    if int(entries[0]) == -1:
-        y.append([0,1])
-    else:
-        y.append([1, 0])
-    x.append({int(k.split(":")[0]):int(k.split(":")[1]) for k in entries[1:]})
-    features.update(x[-1].keys())
-x_y = zip(x,y)
-'''
 from sklearn.externals.joblib import Memory
 from sklearn.datasets import load_svmlight_file
 from sklearn.linear_model import LogisticRegression
@@ -28,30 +12,48 @@ from multiprocessing import cpu_count
 import pickle
 
 mem = Memory("./mycache")
-
+PATH = "../../data/"
+learning_rate = 0.001
+#gunzip -c a4_smvl_trn.gz | head -n 100000 |  gshuf > sample.txt
 @mem.cache
 def get_data(file_name):
-    data = load_svmlight_file(file_name)
-    return data[0], map(lambda x: [0,1] if x == -1 else [1,0], data[1])
+    x = []
+    y = []
+    features = set()
+    for line in file(file_name):
+        entries = line.strip().split(" ")
+        if int(entries[0]) == -1:
+            y.append([0,1])
+        else:
+            y.append([1, 0])
+        x.append({int(k.split(":")[0]):int(k.split(":")[1]) for k in entries[1:]})
+        features.update(x[-1].keys())
+    x_y = zip(x,y)
+    return x_y, feature_count
+
+
+
+
+
+
 
 print "loading train data"
-train_X, train_y = get_data(PATH + "a4_smvl_trn")
-#train_x_y = zip(train_X,train_y)
+train_x_y, feature_count = get_data(PATH + "a4_smvl_trn")
+train_x_y = zip(train_X,train_y)
+print "read train: X:", train_X.shape,"y: ", train_y.shape
+
+
 '''
 print "loading validation data"
 validation_X, validation_y = get_data(PATH + "a4_smvl_val")
 '''
 print "loading test data"
-test_X, test_y = get_data(PATH+"a4_smvl_tst")
-#test_x_y = zip(test_X, test_y)
+test_x_y, _ = get_data(PATH+"a4_smvl_tst")
 print "loading data finished"
 
-print "read train: X:", train_X.shape,"y: ", train_y.shape
 
-feature_count = train_X.shape
-learning_rate = 0.001
 
-sess = tf.InteractiveSession()
+sess = tf.Session()
 
 
 def variable_summaries(var, name):
@@ -146,12 +148,15 @@ batch_size = 100
 counter = 0
 saver = tf.train.Saver()
 for epoch in range(50):
+    idx = np.random.permutation(train_X.shape[0])
+    #train_X = train_X[idx,:]
+    #train_y = train_y[idx,:]
     random.shuffle(train_x_y)
     start = 0
     while start < len(train+x_y):
-        #batch = np.array(train_x_y[start:start+batch_size])
-        batch_X = train_X[start:start+batch_size, :]
-        batch_y = train_y[tart:start+batch_size, :]
+        batch = np.array(train_x_y[start:start+batch_size])
+        #batch_X = train_X[start:start+batch_size, :]
+        #batch_y = train_y[tart:start+batch_size, :]
         start = start+batch_size
         labels = []
         #feats_np = np.zeros((len(batch),feature_count))
@@ -163,8 +168,8 @@ for epoch in range(50):
             labels.append(label)
         labels_np = np.vstack(labels)
         '''
-        feats_np = batch_X.todense()
-        labels_np = batch_y
+        feats_np = batch[:,0].todense()
+        labels_np = batch[:,1]
         feed_dict = {x_tensor:feats_np, y_tensor:labels_np}
         # print x_tensor,y_tensor,feats_np.shape,labels_np.shape
         summary,_ = sess.run([merged,train_step],feed_dict=feed_dict)
